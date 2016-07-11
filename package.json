@@ -1,6 +1,6 @@
 {
   "name": "babel-helper-vue-jsx-merge-props",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "babel helper for vue jsx spread.",
   "main": "index.js",
   "repository": {
