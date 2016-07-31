@@ -1,4 +1,4 @@
-var nestRE = /^(attrs|props|on|class|style|staticAttrs)$/
+var nestRE = /^(attrs|props|on|nativeOn|class|style)$/
 
 module.exports = function mergeJSXProps (objs) {
   return objs.reduce(function (a, b) {
