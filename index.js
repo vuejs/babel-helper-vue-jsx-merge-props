@@ -1,4 +1,4 @@
-var nestRE = /^(attrs|props|on|nativeOn|class|style)$/
+var nestRE = /^(attrs|props|on|nativeOn|class|style|hook)$/
 
 module.exports = function mergeJSXProps (objs) {
   return objs.reduce(function (a, b) {
@@ -7,7 +7,12 @@ module.exports = function mergeJSXProps (objs) {
       aa = a[key]
       bb = b[key]
       if (aa && nestRE.test(key)) {
-        if (Array.isArray(aa)) {
+        if (key === 'on' || key === 'nativeOn' || key === 'hook') {
+          // merge functions
+          for (nestedKey in bb) {
+            aa[nestedKey] = mergeFn(aa[nestedKey], bb[nestedKey])
+          }
+        } else if (Array.isArray(aa)) {
           a[key] = aa.concat(bb)
         } else if (Array.isArray(bb)) {
           a[key] = [aa].concat(bb)
@@ -22,4 +27,11 @@ module.exports = function mergeJSXProps (objs) {
     }
     return a
   }, {})
+}
+
+function mergeFn (a, b) {
+  return function () {
+    a.apply(this, arguments)
+    b.apply(this, arguments)
+  }
 }
