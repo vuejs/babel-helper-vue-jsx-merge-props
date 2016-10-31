@@ -2,11 +2,24 @@ var nestRE = /^(attrs|props|on|nativeOn|class|style|hook)$/
 
 module.exports = function mergeJSXProps (objs) {
   return objs.reduce(function (a, b) {
-    var aa, bb, key, nestedKey
+    var aa, bb, key, nestedKey, temp
     for (key in b) {
       aa = a[key]
       bb = b[key]
       if (aa && nestRE.test(key)) {
+        // normalize class
+        if (key === 'class') {
+          if (typeof aa === 'string') {
+            temp = aa
+            a[key] = aa = {}
+            aa[temp] = true
+          }
+          if (typeof bb === 'string') {
+            temp = bb
+            b[key] = bb = {}
+            bb[temp] = true
+          }
+        }
         if (key === 'on' || key === 'nativeOn' || key === 'hook') {
           // merge functions
           for (nestedKey in bb) {
