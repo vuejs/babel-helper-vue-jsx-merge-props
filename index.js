@@ -1,4 +1,37 @@
-var nestRE = /^(attrs|props|on|nativeOn|class|style|hook)$/
+var nestRE = [
+  'attrs',
+  'props',
+  'once',
+  'on',
+  'nativeOn',
+  'class',
+  'style',
+  'hook'
+]
+
+var isNested = [
+  'on',
+  'once',
+  'nativeOn',
+  'hook'
+]
+
+function mergeFn (a, b) {
+  return function () {
+    var args = []
+    var i = 0
+    var n = arguments.length
+
+    // Optimization for V8
+    // https://github.com/petkaantonov/bluebird/wiki/Optimization-killers
+    for (; i < n; i++) {
+      args[i] = arguments[i]
+    }
+
+    a.apply(this, args)
+    b.apply(this, args)
+  }
+}
 
 module.exports = function mergeJSXProps (objs) {
   return objs.reduce(function (a, b) {
@@ -6,7 +39,7 @@ module.exports = function mergeJSXProps (objs) {
     for (key in b) {
       aa = a[key]
       bb = b[key]
-      if (aa && nestRE.test(key)) {
+      if (aa && nestRE.indexOf(key) > -1) {
         // normalize class
         if (key === 'class') {
           if (typeof aa === 'string') {
@@ -20,7 +53,7 @@ module.exports = function mergeJSXProps (objs) {
             bb[temp] = true
           }
         }
-        if (key === 'on' || key === 'nativeOn' || key === 'hook') {
+        if (isNested.indexOf(key) > -1) {
           // merge functions
           for (nestedKey in bb) {
             aa[nestedKey] = mergeFn(aa[nestedKey], bb[nestedKey])
@@ -40,11 +73,4 @@ module.exports = function mergeJSXProps (objs) {
     }
     return a
   }, {})
-}
-
-function mergeFn (a, b) {
-  return function () {
-    a.apply(this, arguments)
-    b.apply(this, arguments)
-  }
 }
