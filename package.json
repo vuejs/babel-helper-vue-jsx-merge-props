@@ -17,5 +17,10 @@
   "bugs": {
     "url": "https://github.com/vuejs/babel-helper-vue-jsx-merge-props/issues"
   },
-  "homepage": "https://github.com/vuejs/babel-helper-vue-jsx-merge-props#readme"
+  "homepage": "https://github.com/vuejs/babel-helper-vue-jsx-merge-props#readme",
+  "dependencies": {
+    "eslint": "^3.9.1",
+    "eslint-config-vue": "^2.0.0",
+    "eslint-plugin-vue": "^1.0.0"
+  }
 }
