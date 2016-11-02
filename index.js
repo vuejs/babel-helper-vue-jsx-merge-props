@@ -1,4 +1,4 @@
-var nestRE = [
+var isSpecialProp = [
   'attrs',
   'props',
   'once',
@@ -33,25 +33,25 @@ function mergeFn (a, b) {
   }
 }
 
+function pushClass (classList, xx) {
+  // Prevent duplicate class names
+  if (typeof xx === 'string' && classList.indexOf(xx) === -1) {
+    classList.push(xx)
+  }
+}
+
 module.exports = function mergeJSXProps (objs) {
-  return objs.reduce(function (a, b) {
-    var aa, bb, key, nestedKey, temp
+  var classList = []
+  var jsxProps = objs.reduce(function (a, b) {
+    var aa, bb, key, nestedKey
     for (key in b) {
       aa = a[key]
       bb = b[key]
-      if (aa && nestRE.indexOf(key) > -1) {
+      if (aa && isSpecialProp.indexOf(key) > -1) {
         // normalize class
         if (key === 'class') {
-          if (typeof aa === 'string') {
-            temp = aa
-            a[key] = aa = {}
-            aa[temp] = true
-          }
-          if (typeof bb === 'string') {
-            temp = bb
-            b[key] = bb = {}
-            bb[temp] = true
-          }
+          pushClass(classList, aa)
+          pushClass(classList, bb)
         }
         if (isNested.indexOf(key) > -1) {
           // merge functions
@@ -72,5 +72,9 @@ module.exports = function mergeJSXProps (objs) {
       }
     }
     return a
-  }, {})
+  })
+
+  // Keeps the class names in consistent order
+  jsxProps.class = classList.sort()
+  return jsxProps
 }
