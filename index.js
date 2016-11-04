@@ -1,4 +1,4 @@
-var isSpecialProp = [
+const isSpecialProp = [
   'attrs',
   'props',
   'once',
@@ -9,7 +9,7 @@ var isSpecialProp = [
   'hook'
 ]
 
-var isNestedProp = [
+const isNestedProp = [
   'on',
   'once',
   'nativeOn',
@@ -18,9 +18,9 @@ var isNestedProp = [
 
 function mergeFn (a, b) {
   return function () {
-    var args = []
-    var i = 0
-    var n = arguments.length
+    const args = []
+    const n = arguments.length
+    let i = 0
 
     // Optimization for V8
     // https://github.com/petkaantonov/bluebird/wiki/Optimization-killers
@@ -33,30 +33,18 @@ function mergeFn (a, b) {
   }
 }
 
-function pushClass (classList, className) {
-  // Prevent duplicate class names
-  if (typeof className === 'string') {
-    className.split(' ').forEach(function (xx) {
-      // Protect against extra spaces
-      if (xx.length) {
-        classList.push(xx)
-      }
-    })
-  }
-}
-
 module.exports = function mergeJSXProps (objs) {
-  var classList = []
-  var jsxProps = objs.reduce(function (a, b) {
-    var aa, bb, key, nestedKey
+  let classList = []
+  const jsxProps = objs.reduce(function (a, b) {
+    let aa, bb, key, nestedKey
     for (key in b) {
       aa = a[key]
       bb = b[key]
       if (aa && isSpecialProp.indexOf(key) > -1) {
         // normalize class
         if (key === 'class') {
-          pushClass(classList, aa)
-          pushClass(classList, bb)
+          classList = aa ? classList.concat(aa) : classList
+          classList = bb ? classList.concat(bb) : classList
         }
         if (isNestedProp.indexOf(key) > -1) {
           // merge functions
@@ -79,6 +67,6 @@ module.exports = function mergeJSXProps (objs) {
     return a
   })
 
-  jsxProps.class = classList.join(' ')
+  jsxProps.class = classList
   return jsxProps
 }
