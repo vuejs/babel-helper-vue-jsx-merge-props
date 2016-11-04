@@ -9,7 +9,7 @@ var isSpecialProp = [
   'hook'
 ]
 
-var isNested = [
+var isNestedProp = [
   'on',
   'once',
   'nativeOn',
@@ -33,10 +33,15 @@ function mergeFn (a, b) {
   }
 }
 
-function pushClass (classList, xx) {
+function pushClass (classList, className) {
   // Prevent duplicate class names
-  if (typeof xx === 'string' && classList.indexOf(xx) === -1) {
-    classList.push(xx)
+  if (typeof className === 'string') {
+    className.split(' ').forEach(function (xx) {
+      // Protect against extra spaces
+      if (xx.length) {
+        classList.push(xx)
+      }
+    })
   }
 }
 
@@ -53,7 +58,7 @@ module.exports = function mergeJSXProps (objs) {
           pushClass(classList, aa)
           pushClass(classList, bb)
         }
-        if (isNested.indexOf(key) > -1) {
+        if (isNestedProp.indexOf(key) > -1) {
           // merge functions
           for (nestedKey in bb) {
             aa[nestedKey] = mergeFn(aa[nestedKey], bb[nestedKey])
@@ -74,7 +79,6 @@ module.exports = function mergeJSXProps (objs) {
     return a
   })
 
-  // Keeps the class names in consistent order
-  jsxProps.class = classList.sort()
+  jsxProps.class = classList.join(' ')
   return jsxProps
 }
