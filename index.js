@@ -44,7 +44,7 @@ module.exports = function mergeJSXProps (objs) {
 
 function mergeFn (a, b) {
   return function () {
-    a.apply(this, arguments)
-    b.apply(this, arguments)
+    a && a.apply(this, arguments)
+    b && b.apply(this, arguments)
   }
 }
