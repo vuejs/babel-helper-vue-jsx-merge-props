@@ -35,7 +35,7 @@ module.exports = function mergeJSXProps (objs) {
           }
         }
       } else {
-        a[key] = b[key]
+        a[key] = copy(b[key])
       }
     }
     return a
@@ -47,4 +47,17 @@ function mergeFn (a, b) {
     a && a.apply(this, arguments)
     b && b.apply(this, arguments)
   }
+}
+
+function copy (val) {
+  if (typeof val === 'string'
+    || typeof val === 'number'
+    || val === null
+    || val === undefined) {
+    return val
+  }
+  if (Array.isArray(val)) {
+    return val.slice()
+  }
+  return Object.assign({}, val)
 }
