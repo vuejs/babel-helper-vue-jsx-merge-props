@@ -50,7 +50,8 @@ function mergeFn (a, b) {
 }
 
 function copy (val) {
-  if (typeof val === 'string'
+  if (val instanceof Function
+    || typeof val === 'string'
     || typeof val === 'number'
     || val === null
     || val === undefined) {
